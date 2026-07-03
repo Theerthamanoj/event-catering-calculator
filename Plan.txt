@@ -1,0 +1,171 @@
+Read memory
+
+Analyzing your answers...
+
+Now I have everything I need. Let me design the full architecture and plan. 
+
+Created memory file /memories/session/plan.md
+
+No workspace open so I'll present the plan directly.
+
+---
+
+## Plan: Event Catering Calculator — Full Stack App
+
+**TL;DR:** A multi-event catering management app with React frontend, Flask/SQLAlchemy backend, and SQLite. The core value is a set-intersection conflict engine that checks every guest's *combined* dietary restrictions against every dish's ingredient allergen tags — correctly catching edge cases like a vegetarian+gluten-free guest vs. a dish that's meat-free but contains gluten.
+
+---
+
+### Architecture Overview
+
+```
+React (Vite)  ──axios──►  Flask API  ──SQLAlchemy──►  SQLite
+```
+
+**Allergen Conflict Map** (server-side constant, drives all checks):
+| Guest Restriction | Blocked Ingredient Tags |
+|---|---|
+| `vegetarian` | `meat` |
+| `vegan` | `meat`, `dairy`, `eggs`, `honey` |
+| `gluten_free` | `gluten` |
+| `nut_allergy` | `nuts` |
+
+**Core Algorithm:** For each guest–dish pair → union all forbidden ingredient sets for the guest's restrictions → intersect with dish's ingredient tag set → any overlap = conflict. One portion prepared per compatible guest.
+
+---
+
+### Database Schema (SQLite via SQLAlchemy)
+
+| Table | Key Columns |
+|---|---|
+| `events` | id, name, date, description |
+| `guests` | id, event_id, name |
+| `guest_dietary_tags` | id, guest_id, tag |
+| `dishes` | id, name, per_head_cost, description |
+| `ingredients` | id, name |
+| `ingredient_allergen_tags` | id, ingredient_id, tag (`meat`/`dairy`/`eggs`/`honey`/`gluten`/`nuts`) |
+| `dish_ingredients` | dish_id, ingredient_id |
+| `event_menu` | id, event_id, dish_id |
+
+---
+
+### Backend API Endpoints (Flask)
+
+| Method | Route | Purpose |
+|---|---|---|
+| GET/POST | `/api/events` | List / create events |
+| GET/PUT/DELETE | `/api/events/<id>` | Event detail CRUD |
+| GET/POST | `/api/events/<id>/guests` | List / add guests to event |
+| PUT/DELETE | `/api/guests/<id>` | Edit / remove guest |
+| GET/POST | `/api/dishes` | Global dish library |
+| PUT/DELETE | `/api/dishes/<id>` | Edit / remove dish |
+| GET/POST | `/api/ingredients` | Ingredient library |
+| POST/DELETE | `/api/events/<id>/menu/<dish_id>` | Add / remove dish from event menu |
+| GET | `/api/events/<id>/calculate` | **Run catering calculation** |
+
+---
+
+### Calculation Output Shape (`/calculate`)
+
+```json
+{
+  "dishes": [
+    {
+      "dish_id": 1,
+      "name": "Pasta Primavera",
+      "quantity": 14,
+      "total_cost": 140.00,
+      "flagged_groups": [
+        { "restriction": "gluten_free", "affected_guests": 3 }
+      ]
+    }
+  ],
+  "cost_matrix": {
+    "by_dietary_group": { "vegetarian": 320.00, "gluten_free": 180.00, ... },
+    "by_dish": [ { "dish": "Pasta Primavera", "breakdown": {...} } ],
+    "grand_total": 1240.00
+  }
+}
+```
+
+---
+
+### Project Structure
+
+```
+event-catering-calculator/
+├── backend/
+│   ├── app.py               ← Flask factory + CORS
+│   ├── models.py            ← All 8 SQLAlchemy models
+│   ├── calculator.py        ← Core conflict + cost logic
+│   ├── requirements.txt
+│   └── routes/
+│       ├── events.py
+│       ├── guests.py
+│       ├── dishes.py
+│       ├── menu.py
+│       └── calculate.py
+└── frontend/
+    └── src/
+        ├── App.jsx           ← React Router setup
+        ├── api/index.js      ← Axios service layer
+        ├── components/       ← DietaryTagBadge, ConflictFlag, CostMatrix
+        └── pages/
+            ├── EventsPage.jsx
+            ├── EventDetailPage.jsx   ← 3 tabs: Guests / Menu / Results
+            └── DishesPage.jsx
+```
+
+---
+
+### Implementation Phases
+
+**Phase 1 — Backend Foundation** *(sequential)*
+1. Scaffold Flask app (`app.py`, CORS, SQLite init, config)
+2. Define all 8 SQLAlchemy models in `models.py`
+3. Seed script with example data (2 events, 10 guests, 5 dishes)
+
+**Phase 2 — Backend API** *(steps 4–7 parallel, 8 depends on 2)*
+4. Events CRUD routes
+5. Guests CRUD routes (scoped to event)
+6. Dishes + Ingredients CRUD routes
+7. Event menu add/remove routes
+8. `calculator.py` (set-intersection engine + cost matrix) → `/calculate` endpoint
+
+**Phase 3 — Frontend Scaffold** *(parallel with Phase 2)*
+9. Vite + React project, install `react-router-dom`, `axios`
+10. Axios service layer wrapping all API endpoints
+11. App routing skeleton
+
+**Phase 4 — Frontend Pages**
+12. `EventsPage` — list + create events
+13. `DishesPage` — dish library with ingredient management (add allergen tags per ingredient)
+14. `EventDetailPage` — 3 tabs:
+    - **Guests**: add/remove guests, multi-select dietary tags via checkboxes
+    - **Menu**: browse global dish library, add/remove dishes for this event
+    - **Results**: trigger `/calculate`, render dish table + conflict flags + cost matrix
+
+**Phase 5 — Polish**
+15. Empty states, loading spinners, API error toasts
+16. End-to-end scenario test: vegetarian+gluten-free guest vs. pasta dish that's meat-free but contains gluten — confirm flag appears
+
+---
+
+### Verification
+
+1. **Unit test** `calculator.py` with a guest who is `[vegetarian, gluten_free]` and a dish with only `gluten` ingredient — must flag conflict even though dish is vegetarian-friendly
+2. **API smoke test**: seed DB, call `/calculate`, verify quantities and cost totals match manual calculation
+3. **UI test**: walk through creating an event → adding 3 guests with mixed tags → building a menu → viewing results with expected flags
+4. Run `flask run` + `vite dev` together; confirm no CORS errors and all tabs render data
+
+---
+
+### Decisions & Scope
+- **In scope:** full CRUD, multi-event, per-guest portions, full cost matrix
+- **Out of scope:** authentication, PDF export, real-time updates (WebSocket)
+- **Allergen tag set** is fixed (`meat`, `dairy`, `eggs`, `honey`, `gluten`, `nuts`) — extendable later via a config table if needed
+- Flask development server is fine; no production WSGI setup needed for this plan
+
+---
+
+Does this plan look right, or would you like to adjust anything — scope, structure, or the allergen model?
