@@ -1,0 +1,56 @@
+.tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  width: fit-content;
+  padding: 0.35rem 0.7rem;
+  border-radius: 999px;
+  font-size: 0.8rem;
+  font-weight: 700;
+  letter-spacing: 0.01em;
+}
+
+.neutral {
+  background: rgba(148, 163, 184, 0.14);
+  color: var(--color-text);
+}
+
+.success {
+  background: rgba(34, 197, 94, 0.14);
+  color: #166534;
+}
+
+.warning {
+  background: rgba(245, 158, 11, 0.16);
+  color: #92400e;
+}
+
+.accent {
+  background: rgba(37, 99, 235, 0.12);
+  color: #1d4ed8;
+}
+
+.mint {
+  background: rgba(20, 184, 166, 0.12);
+  color: #0f766e;
+}
+
+.sand {
+  background: rgba(245, 158, 11, 0.14);
+  color: #b45309;
+}
+
+.berry {
+  background: rgba(236, 72, 153, 0.12);
+  color: #be185d;
+}
+
+.sky {
+  background: rgba(14, 165, 233, 0.12);
+  color: #0369a1;
+}
+
+.muted {
+  background: rgba(15, 23, 42, 0.06);
+  color: var(--color-muted);
+}

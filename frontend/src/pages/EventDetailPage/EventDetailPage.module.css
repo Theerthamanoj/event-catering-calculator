@@ -1,0 +1,283 @@
+.summaryStrip {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.65rem;
+}
+
+.tabBar {
+  display: flex;
+  gap: 0.6rem;
+  flex-wrap: wrap;
+}
+
+.tabButton,
+.tabButtonActive,
+.primaryButton,
+.secondaryButton,
+.saveButton {
+  border: 0;
+  border-radius: 999px;
+  padding: 0.8rem 1.1rem;
+  font: inherit;
+  font-weight: 800;
+  cursor: pointer;
+}
+
+.tabButton {
+  background: rgba(255, 255, 255, 0.74);
+  color: var(--color-ink);
+}
+
+.tabButtonActive {
+  background: linear-gradient(135deg, rgba(217, 119, 6, 0.16), rgba(37, 99, 235, 0.16));
+  box-shadow: inset 0 0 0 1px rgba(37, 99, 235, 0.2);
+}
+
+.panelGrid {
+  display: grid;
+  grid-template-columns: minmax(0, 1.6fr) minmax(290px, 0.8fr);
+  gap: 1rem;
+}
+
+.card,
+.sideCard,
+.menuCard {
+  border-radius: 28px;
+  background: rgba(255, 255, 255, 0.8);
+  border: 1px solid rgba(148, 163, 184, 0.16);
+  -webkit-backdrop-filter: blur(12px);
+  box-shadow: var(--shadow-sm);
+  backdrop-filter: blur(12px);
+}
+
+.card,
+.sideCard {
+  padding: 1.15rem;
+}
+
+.card {
+  display: grid;
+  gap: 1rem;
+}
+
+.cardHeader {
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+  align-items: start;
+}
+
+.kicker,
+.menuCategory {
+  margin: 0 0 0.35rem;
+  color: var(--color-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.16em;
+  font-size: 0.72rem;
+  font-weight: 800;
+}
+
+.cardHeader h2 {
+  margin: 0;
+  font-family: var(--font-display);
+  letter-spacing: -0.03em;
+}
+
+.guestList,
+.menuGrid,
+.metricStack {
+  display: grid;
+  gap: 0.85rem;
+}
+
+.guestRow {
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+  align-items: start;
+  padding: 0.95rem 0;
+  border-bottom: 1px solid rgba(148, 163, 184, 0.14);
+}
+
+.guestRow:last-child {
+  border-bottom: 0;
+  padding-bottom: 0;
+}
+
+.guestRow strong,
+.menuCard strong,
+.breakdownRow strong {
+  color: var(--color-ink);
+}
+
+.guestRow p,
+.menuCard p,
+.sideText {
+  margin: 0;
+  color: var(--color-text);
+  line-height: 1.65;
+}
+
+.tagRow {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.sideCard {
+  display: grid;
+  gap: 0.95rem;
+  align-content: start;
+}
+
+.field,
+.fieldset {
+  display: grid;
+  gap: 0.5rem;
+}
+
+.field span,
+.fieldset legend {
+  font-weight: 700;
+  color: var(--color-ink);
+}
+
+.field input {
+  width: 100%;
+  border: 1px solid rgba(148, 163, 184, 0.25);
+  border-radius: 16px;
+  padding: 0.85rem 1rem;
+  font: inherit;
+  background: rgba(255, 255, 255, 0.94);
+}
+
+.fieldset {
+  border: 0;
+  margin: 0;
+  padding: 0;
+}
+
+.checkGrid {
+  display: grid;
+  gap: 0.6rem;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.checkItem {
+  display: flex;
+  gap: 0.55rem;
+  align-items: center;
+  padding: 0.7rem 0.8rem;
+  border-radius: 14px;
+  background: rgba(148, 163, 184, 0.08);
+}
+
+.checkItem input {
+  accent-color: #2563eb;
+}
+
+.saveButton,
+.primaryButton,
+.secondaryButton {
+  padding: 0.8rem 1.1rem;
+  border-radius: 999px;
+  font: inherit;
+  font-weight: 800;
+  border: 0;
+  cursor: pointer;
+}
+
+.saveButton,
+.primaryButton {
+  color: #fff;
+  background: linear-gradient(135deg, #0f766e, #2563eb);
+}
+
+.secondaryButton {
+  color: var(--color-ink);
+  background: rgba(255, 255, 255, 0.92);
+}
+
+.menuGrid {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.menuCard {
+  padding: 1rem;
+  display: grid;
+  gap: 0.85rem;
+}
+
+.menuTopRow {
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+  align-items: start;
+}
+
+.menuTopRow strong {
+  font-size: 1.08rem;
+}
+
+.resultTable {
+  display: grid;
+  gap: 0.5rem;
+}
+
+.resultHead,
+.resultRow {
+  display: grid;
+  grid-template-columns: minmax(0, 1.4fr) 0.5fr 0.6fr minmax(0, 1.6fr);
+  gap: 0.75rem;
+  align-items: start;
+}
+
+.resultHead {
+  padding: 0.7rem 0.9rem;
+  color: var(--color-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  font-size: 0.72rem;
+  font-weight: 800;
+}
+
+.resultRow {
+  padding: 0.95rem 0.9rem;
+  border-radius: 18px;
+  background: rgba(15, 23, 42, 0.04);
+}
+
+.breakdownRow {
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 0.85rem 0;
+  border-bottom: 1px solid rgba(148, 163, 184, 0.14);
+}
+
+.breakdownRow:last-child {
+  border-bottom: 0;
+}
+
+@media (max-width: 1080px) {
+  .panelGrid,
+  .menuGrid {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 640px) {
+  .cardHeader,
+  .guestRow,
+  .menuTopRow,
+  .breakdownRow,
+  .resultHead,
+  .resultRow {
+    grid-template-columns: 1fr;
+    flex-direction: column;
+  }
+
+  .checkGrid {
+    grid-template-columns: 1fr;
+  }
+}

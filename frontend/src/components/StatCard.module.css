@@ -1,0 +1,50 @@
+.card {
+  display: grid;
+  gap: 0.4rem;
+  padding: 1rem 1.1rem;
+  border-radius: 22px;
+  background: rgba(255, 255, 255, 0.72);
+  border: 1px solid rgba(148, 163, 184, 0.18);
+  -webkit-backdrop-filter: blur(12px);
+  backdrop-filter: blur(12px);
+  box-shadow: var(--shadow-sm);
+}
+
+.label {
+  margin: 0;
+  color: var(--color-muted);
+  font-size: 0.85rem;
+}
+
+.value {
+  font-size: 1.75rem;
+  line-height: 1;
+  letter-spacing: -0.04em;
+  color: var(--color-ink);
+}
+
+.detail {
+  margin: 0;
+  color: var(--color-text);
+  line-height: 1.55;
+}
+
+.neutral {
+  background: rgba(255, 255, 255, 0.72);
+}
+
+.mint {
+  background: linear-gradient(180deg, rgba(220, 252, 231, 0.82), rgba(255, 255, 255, 0.8));
+}
+
+.sand {
+  background: linear-gradient(180deg, rgba(254, 243, 199, 0.84), rgba(255, 255, 255, 0.8));
+}
+
+.berry {
+  background: linear-gradient(180deg, rgba(252, 231, 243, 0.84), rgba(255, 255, 255, 0.8));
+}
+
+.sky {
+  background: linear-gradient(180deg, rgba(224, 242, 254, 0.84), rgba(255, 255, 255, 0.8));
+}

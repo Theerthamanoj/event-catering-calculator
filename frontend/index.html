@@ -1,0 +1,512 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Event Catering Calculator</title>
+    <style>
+      :root {
+        --ink: #0f172a;
+        --text: #334155;
+        --muted: #64748b;
+        --bg: #f8fafc;
+        --line: rgba(148, 163, 184, 0.18);
+        --shadow-sm: 0 10px 30px rgba(15, 23, 42, 0.08);
+        --shadow-lg: 0 25px 50px rgba(15, 23, 42, 0.18);
+        --display: "Fraunces", Georgia, serif;
+        --body: "Manrope", system-ui, sans-serif;
+      }
+
+      * { box-sizing: border-box; }
+      html { color-scheme: light; }
+      body {
+        margin: 0;
+        font-family: var(--body);
+        color: var(--text);
+        background:
+          radial-gradient(circle at top left, rgba(250, 204, 21, 0.16), transparent 30%),
+          radial-gradient(circle at top right, rgba(37, 99, 235, 0.16), transparent 26%),
+          linear-gradient(180deg, #f8fafc, #eef2ff 36%, #f8fafc 100%);
+      }
+
+      button,
+      input { font: inherit; }
+      button:focus-visible,
+      a:focus-visible,
+      input:focus-visible {
+        outline: 3px solid rgba(37, 99, 235, 0.45);
+        outline-offset: 3px;
+      }
+
+      .app {
+        min-height: 100vh;
+        padding: clamp(1rem, 2.4vw, 2rem);
+      }
+
+      .topbar,
+      .hero,
+      .section-head,
+      .event-top,
+      .dish-top,
+      .guest-row,
+      .row,
+      .breakdown-row,
+      .result-row,
+      .table-head,
+      .table-row {
+        display: flex;
+        justify-content: space-between;
+        gap: 1rem;
+        align-items: start;
+      }
+
+      .topbar {
+        align-items: center;
+        margin-bottom: 1.25rem;
+      }
+
+      .brand {
+        margin: 0;
+        color: var(--ink);
+        font-weight: 900;
+        letter-spacing: -0.03em;
+      }
+
+      .tagline {
+        margin: 0.35rem 0 0;
+        color: var(--muted);
+      }
+
+      .nav,
+      .tags,
+      .chips,
+      .tab-row,
+      .stack {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.5rem;
+      }
+
+      .nav button,
+      .tabs button {
+        border: 0;
+        border-radius: 999px;
+        padding: 0.7rem 1rem;
+        font-weight: 800;
+        cursor: pointer;
+        color: var(--ink);
+        background: rgba(255, 255, 255, 0.72);
+      }
+
+      .nav button[aria-pressed="true"],
+      .tabs button[aria-pressed="true"] {
+        color: #fff;
+        background: linear-gradient(135deg, #0f172a, #2563eb);
+        box-shadow: var(--shadow-sm);
+      }
+
+      .page {
+        display: none;
+        gap: 1.25rem;
+      }
+
+      .page.active { display: grid; }
+
+      .hero {
+        justify-content: space-between;
+        align-items: end;
+        padding: clamp(1.25rem, 2.5vw, 2rem);
+        border-radius: 28px;
+        background: linear-gradient(135deg, rgba(15, 23, 42, 0.94), rgba(29, 78, 216, 0.68));
+        box-shadow: var(--shadow-lg);
+        border: 1px solid rgba(255, 255, 255, 0.12);
+      }
+
+      .kicker,
+      .section-label,
+      .mini-label {
+        margin: 0 0 0.5rem;
+        text-transform: uppercase;
+        letter-spacing: 0.18em;
+        color: rgba(226, 232, 240, 0.72);
+        font-size: 0.75rem;
+        font-weight: 800;
+      }
+
+      h1 {
+        margin: 0;
+        font-family: var(--display);
+        font-size: clamp(2.1rem, 5vw, 4rem);
+        line-height: 0.95;
+        letter-spacing: -0.04em;
+        color: #f8fafc;
+        max-width: 12ch;
+      }
+
+      .subtitle {
+        max-width: 58ch;
+        margin: 1rem 0 0;
+        color: rgba(226, 232, 240, 0.82);
+        line-height: 1.7;
+      }
+
+      .actions { display: flex; flex-wrap: wrap; gap: 0.75rem; }
+      .btn {
+        border: 0;
+        border-radius: 999px;
+        padding: 0.85rem 1.2rem;
+        font-weight: 800;
+        cursor: pointer;
+        transition: transform 160ms ease;
+      }
+      .btn:hover { transform: translateY(-1px); }
+      .btn.primary {
+        color: #fff;
+        background: linear-gradient(135deg, #d97706, #2563eb);
+        box-shadow: 0 18px 30px rgba(37, 99, 235, 0.22);
+      }
+      .btn.secondary {
+        background: rgba(255, 255, 255, 0.92);
+        color: var(--ink);
+      }
+
+      .grid-4,
+      .grid-2,
+      .page-grid,
+      .menu-grid {
+        display: grid;
+        gap: 1rem;
+      }
+      .grid-4 { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+      .grid-2 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+      .page-grid { grid-template-columns: minmax(0, 1.5fr) minmax(290px, 0.9fr); }
+
+      .card,
+      .panel {
+        border-radius: 26px;
+        background: rgba(255, 255, 255, 0.8);
+        border: 1px solid var(--line);
+        box-shadow: var(--shadow-sm);
+        -webkit-backdrop-filter: blur(12px);
+        backdrop-filter: blur(12px);
+      }
+      .card { padding: 1.1rem; }
+
+      .stat .label,
+      .section-label,
+      .mini-label {
+        margin: 0 0 0.35rem;
+        color: var(--muted);
+        text-transform: uppercase;
+        letter-spacing: 0.16em;
+        font-size: 0.72rem;
+        font-weight: 800;
+      }
+      .stat strong { display: block; font-size: 1.75rem; line-height: 1; letter-spacing: -0.04em; color: var(--ink); }
+      .stat p,
+      .card p,
+      .panel p { margin: 0; line-height: 1.65; }
+      .section-head { align-items: end; }
+      .section-head h2,
+      .panel h2,
+      .panel h3 { margin: 0; font-family: var(--display); letter-spacing: -0.03em; color: var(--ink); }
+      .event-card,
+      .dish-card,
+      .panel { padding: 1.15rem; }
+      .event-top h3,
+      .dish-top h3,
+      .guest-row strong,
+      .result-row strong { margin: 0; color: var(--ink); }
+      .event-date,
+      .event-venue,
+      .muted { color: var(--muted); }
+
+      .pill {
+        display: inline-flex;
+        align-items: center;
+        width: fit-content;
+        padding: 0.35rem 0.7rem;
+        border-radius: 999px;
+        font-size: 0.8rem;
+        font-weight: 700;
+      }
+      .pill.neutral { background: rgba(148, 163, 184, 0.14); color: var(--text); }
+      .pill.success { background: rgba(34, 197, 94, 0.14); color: #166534; }
+      .pill.warning { background: rgba(245, 158, 11, 0.16); color: #92400e; }
+      .pill.accent { background: rgba(37, 99, 235, 0.12); color: #1d4ed8; }
+      .pill.mint { background: rgba(20, 184, 166, 0.12); color: #0f766e; }
+      .pill.sand { background: rgba(245, 158, 11, 0.14); color: #b45309; }
+      .pill.berry { background: rgba(236, 72, 153, 0.12); color: #be185d; }
+      .pill.sky { background: rgba(14, 165, 233, 0.12); color: #0369a1; }
+
+      .progress {
+        height: 0.55rem;
+        border-radius: 999px;
+        background: rgba(148, 163, 184, 0.16);
+        overflow: hidden;
+      }
+      .progress > span {
+        display: block;
+        height: 100%;
+        border-radius: inherit;
+        background: linear-gradient(90deg, #d97706, #1d4ed8);
+      }
+
+      .field,
+      fieldset {
+        display: grid;
+        gap: 0.5rem;
+        border: 0;
+        margin: 0;
+        padding: 0;
+      }
+      .field span,
+      legend { font-weight: 700; color: var(--ink); }
+      input[type="text"] {
+        width: 100%;
+        border: 1px solid rgba(148, 163, 184, 0.25);
+        border-radius: 16px;
+        padding: 0.85rem 1rem;
+        background: rgba(255, 255, 255, 0.94);
+        color: var(--ink);
+      }
+      .check-grid {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 0.65rem;
+      }
+      .check-item {
+        display: flex;
+        gap: 0.55rem;
+        align-items: center;
+        padding: 0.7rem 0.8rem;
+        border-radius: 14px;
+        background: rgba(148, 163, 184, 0.08);
+      }
+      .check-item input { accent-color: #2563eb; }
+
+      .tabs { display: flex; gap: 0.6rem; flex-wrap: wrap; }
+      .tabs button {
+        border: 0;
+        border-radius: 999px;
+        padding: 0.8rem 1.1rem;
+        font-weight: 800;
+        cursor: pointer;
+        background: rgba(255, 255, 255, 0.74);
+        color: var(--ink);
+      }
+      .tabs button[aria-pressed="true"] {
+        background: linear-gradient(135deg, rgba(217, 119, 6, 0.16), rgba(37, 99, 235, 0.16));
+        box-shadow: inset 0 0 0 1px rgba(37, 99, 235, 0.2);
+      }
+
+      .table { display: grid; gap: 0.5rem; }
+      .table-head,
+      .table-row {
+        display: grid;
+        grid-template-columns: minmax(0, 1.4fr) 0.5fr 0.6fr minmax(0, 1.6fr);
+        gap: 0.75rem;
+        align-items: start;
+      }
+      .table-head {
+        padding: 0.7rem 0.9rem;
+        color: var(--muted);
+        text-transform: uppercase;
+        letter-spacing: 0.12em;
+        font-size: 0.72rem;
+        font-weight: 800;
+      }
+      .table-row {
+        padding: 0.95rem 0.9rem;
+        border-radius: 18px;
+        background: rgba(15, 23, 42, 0.04);
+      }
+
+      @media (max-width: 1080px) {
+        .grid-4,
+        .grid-2,
+        .page-grid,
+        .menu-grid { grid-template-columns: 1fr; }
+      }
+      @media (max-width: 780px) {
+        .topbar,
+        .hero,
+        .section-head,
+        .event-top,
+        .dish-top,
+        .guest-row,
+        .row,
+        .breakdown-row,
+        .result-row,
+        .table-head,
+        .table-row {
+          flex-direction: column;
+          align-items: start;
+        }
+        .check-grid { grid-template-columns: 1fr; }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="app">
+      <header class="topbar">
+        <div>
+          <p class="brand">Event Catering Calculator</p>
+          <p class="tagline">Elegant planning screens for modern service teams.</p>
+        </div>
+        <nav class="nav" aria-label="Primary">
+          <button type="button" data-page="events" aria-pressed="true">Events</button>
+          <button type="button" data-page="dishes" aria-pressed="false">Dishes</button>
+          <button type="button" data-page="detail" aria-pressed="false">Event detail</button>
+        </nav>
+      </header>
+
+      <main>
+        <section class="page active" data-page-panel="events">
+          <header class="hero">
+            <div>
+              <p class="kicker">Event catering control room</p>
+              <h1>Elegant planning for every service</h1>
+              <p class="subtitle">Track each event at a glance, compare guest mix, and move from concept to menu without losing sight of budget or coverage.</p>
+            </div>
+            <div class="actions">
+              <button class="btn primary" type="button">New event</button>
+              <button class="btn secondary" type="button">View menu library</button>
+            </div>
+          </header>
+
+          <div class="grid-4">
+            <article class="card stat"><p class="label">Active events</p><strong>12</strong><p>Three services are in final review.</p></article>
+            <article class="card stat"><p class="label">Guests tracked</p><strong>304</strong><p>Dietary preferences captured across all events.</p></article>
+            <article class="card stat"><p class="label">Menu coverage</p><strong>96%</strong><p>Most events already have a balanced menu mix.</p></article>
+            <article class="card stat"><p class="label">Avg. cost per head</p><strong>$28</strong><p>Projected from confirmed dishes and guest counts.</p></article>
+          </div>
+
+          <section class="page-grid">
+            <div class="stack" style="display:grid; gap:1rem;">
+              <div class="section-head">
+                <div>
+                  <p class="section-label">Upcoming calendar</p>
+                  <h2>Events that feel ready before the first tasting</h2>
+                </div>
+                <span class="pill accent">Responsive overview</span>
+              </div>
+
+              <div class="grid-2">
+                <article class="card event-card"><div class="event-top"><div><p class="event-date">Sat, Aug 17</p><h3>Midsummer Gala</h3></div><span class="pill accent">On track</span></div><p class="event-venue">Glass Atrium</p><div class="grid-2"><div><p class="mini-label">Guests</p><strong>148</strong></div><div><p class="mini-label">Menu items</p><strong>8</strong></div></div><div class="progress"><span style="width:84%"></span></div></article>
+                <article class="card event-card"><div class="event-top"><div><p class="event-date">Thu, Sep 05</p><h3>Founders Brunch</h3></div><span class="pill warning">Needs review</span></div><p class="event-venue">Harbor Terrace</p><div class="grid-2"><div><p class="mini-label">Guests</p><strong>64</strong></div><div><p class="mini-label">Menu items</p><strong>5</strong></div></div><div class="progress"><span style="width:62%"></span></div></article>
+                <article class="card event-card"><div class="event-top"><div><p class="event-date">Fri, Sep 27</p><h3>Client Appreciation Night</h3></div><span class="pill success">Ready</span></div><p class="event-venue">North Loft</p><div class="grid-2"><div><p class="mini-label">Guests</p><strong>92</strong></div><div><p class="mini-label">Menu items</p><strong>6</strong></div></div><div class="progress"><span style="width:92%"></span></div></article>
+                <article class="card event-card"><div class="event-top"><div><p class="event-date">Sun, Oct 06</p><h3>Studio Launch</h3></div><span class="pill accent">Planning</span></div><p class="event-venue">West Hall</p><div class="grid-2"><div><p class="mini-label">Guests</p><strong>126</strong></div><div><p class="mini-label">Menu items</p><strong>7</strong></div></div><div class="progress"><span style="width:73%"></span></div></article>
+              </div>
+            </div>
+
+            <aside class="stack" style="display:grid; gap:1rem;">
+              <section class="panel"><p class="section-label">Guest mix</p><h3>Coverage by dietary segment</h3><div class="stack" style="display:grid; gap:0.85rem;"><div class="row"><div><strong>Vegetarian</strong><p class="muted">34 guests</p></div><span class="pill mint">Vegetarian</span></div><div class="row"><div><strong>Gluten-free</strong><p class="muted">19 guests</p></div><span class="pill sand">Gluten-free</span></div><div class="row"><div><strong>Vegan</strong><p class="muted">12 guests</p></div><span class="pill berry">Vegan</span></div><div class="row"><div><strong>Nut allergy</strong><p class="muted">8 guests</p></div><span class="pill sky">Nut allergy</span></div></div></section>
+              <section class="panel"><p class="section-label">Workflow</p><h3>Quick next steps</h3><ol><li>Review the guest count for each service.</li><li>Balance vegetarian and gluten-free options.</li><li>Confirm the menu before generating totals.</li></ol></section>
+            </aside>
+          </section>
+        </section>
+
+        <section class="page" data-page-panel="dishes">
+          <header class="hero">
+            <div>
+              <p class="kicker">Dish library</p>
+              <h1>A polished dish library with room to breathe</h1>
+              <p class="subtitle">Review signature dishes, inspect allergen coverage, and keep ingredient choices readable on desktops, tablets, and phones.</p>
+            </div>
+            <div class="actions">
+              <button class="btn primary" type="button">Add dish</button>
+              <button class="btn secondary" type="button">Add ingredient</button>
+            </div>
+          </header>
+
+          <div class="page-grid">
+            <div style="display:grid; gap:1rem;">
+              <div class="tabs" role="tablist" aria-label="Dish filters">
+                <button type="button" aria-pressed="true">All</button>
+                <button type="button" aria-pressed="false">Vegetarian</button>
+                <button type="button" aria-pressed="false">Vegan</button>
+                <button type="button" aria-pressed="false">Gluten-free</button>
+              </div>
+
+              <div class="grid-2 menu-grid">
+                <article class="card dish-card"><div class="dish-top"><div><p class="mini-label">Signature</p><h3>Citrus Herb Roasted Chicken</h3></div><span class="pill accent">$14 / head</span></div><p>Bright, crowd-pleasing roast with seasonal greens and a lemon glaze.</p><div class="chips"><span class="pill neutral">gluten-free</span><span class="pill neutral">dairy-free</span><span class="pill warning">meat</span></div></article>
+                <article class="card dish-card"><div class="dish-top"><div><p class="mini-label">Plant-based</p><h3>Miso-Glazed Aubergine</h3></div><span class="pill accent">$11 / head</span></div><p>Silky roasted eggplant with sesame crunch and herb rice.</p><div class="chips"><span class="pill neutral">vegan</span><span class="pill neutral">gluten-free</span><span class="pill warning">gluten</span></div></article>
+                <article class="card dish-card"><div class="dish-top"><div><p class="mini-label">Seasonal</p><h3>Market Vegetable Tart</h3></div><span class="pill accent">$12 / head</span></div><p>Buttery tart stacked with caramelized vegetables and whipped ricotta.</p><div class="chips"><span class="pill neutral">vegetarian</span><span class="pill warning">dairy</span><span class="pill warning">gluten</span></div></article>
+                <article class="card dish-card"><div class="dish-top"><div><p class="mini-label">Dessert</p><h3>Coconut Citrus Panna Cotta</h3></div><span class="pill accent">$8 / head</span></div><p>Silky finale with macerated berries and toasted coconut.</p><div class="chips"><span class="pill neutral">vegetarian</span><span class="pill neutral">gluten-free</span><span class="pill warning">dairy</span></div></article>
+              </div>
+            </div>
+
+            <aside style="display:grid; gap:1rem;">
+              <section class="panel"><p class="section-label">Ingredient studio</p><h3>Keep tags explicit and easy to scan</h3><label class="field"><span>Ingredient name</span><input type="text" value="Charred fennel" /></label><fieldset><legend>Allergen tags</legend><div class="check-grid"><label class="check-item"><input type="checkbox" /> <span>meat</span></label><label class="check-item"><input type="checkbox" checked /> <span>gluten</span></label><label class="check-item"><input type="checkbox" /> <span>dairy</span></label><label class="check-item"><input type="checkbox" /> <span>nuts</span></label></div></fieldset><div style="height:0.9rem"></div><button class="btn primary" type="button">Save ingredient</button></section>
+              <section class="panel"><p class="section-label">Presentation</p><h3>Designed to stay readable across screen sizes</h3><p>Cards compress into a single column on smaller displays so names, tags, and allergen markers never feel cramped.</p></section>
+            </aside>
+          </div>
+        </section>
+
+        <section class="page" data-page-panel="detail">
+          <header class="hero">
+            <div>
+              <p class="kicker">Event detail</p>
+              <h1>Midsummer Gala</h1>
+              <p class="subtitle">Saturday, August 17 · Glass Atrium · 148 guests · Budget $9,400</p>
+            </div>
+            <div class="actions">
+              <button class="btn primary" type="button">Run calculation</button>
+              <button class="btn secondary" type="button">Share event</button>
+            </div>
+          </header>
+
+          <div class="tags"><span class="pill accent">Live planning</span><span class="pill success">Coverage balanced</span><span class="pill warning">1 menu item needs a gluten swap</span><span class="pill neutral">Mock UI only</span></div>
+
+          <div class="tabs" role="tablist" aria-label="Event sections">
+            <button type="button" data-tab="Guests" aria-pressed="true">Guests</button>
+            <button type="button" data-tab="Menu" aria-pressed="false">Menu</button>
+            <button type="button" data-tab="Results" aria-pressed="false">Results</button>
+          </div>
+
+          <section class="detail-view" data-detail-panel="Guests">
+            <div class="page-grid">
+              <div class="panel"><p class="section-label">Guest roster</p><h3>Readable at a glance</h3><div style="display:grid; gap:0.85rem;"><div class="guest-row"><div><strong>Avery Stone</strong><p class="muted">Special handling applies to this guest profile.</p></div><div class="chips"><span class="pill neutral">vegetarian</span><span class="pill neutral">gluten-free</span></div></div><div class="guest-row"><div><strong>Jordan Lee</strong><p class="muted">Special handling applies to this guest profile.</p></div><div class="chips"><span class="pill neutral">vegan</span></div></div><div class="guest-row"><div><strong>Priya Shah</strong><p class="muted">Special handling applies to this guest profile.</p></div><div class="chips"><span class="pill neutral">nut allergy</span></div></div><div class="guest-row"><div><strong>Mia Chen</strong><p class="muted">Special handling applies to this guest profile.</p></div><div class="chips"><span class="pill neutral">gluten-free</span></div></div></div></div>
+              <aside class="panel"><p class="section-label">Add guest</p><label class="field"><span>Name</span><input type="text" value="New guest" /></label><fieldset><legend>Dietary tags</legend><div class="check-grid"><label class="check-item"><input type="checkbox" /> <span>vegetarian</span></label><label class="check-item"><input type="checkbox" checked /> <span>gluten-free</span></label><label class="check-item"><input type="checkbox" /> <span>vegan</span></label><label class="check-item"><input type="checkbox" /> <span>nut allergy</span></label></div></fieldset><div style="height:0.9rem"></div><button class="btn primary" type="button">Save guest</button></aside>
+            </div>
+          </section>
+
+          <section class="detail-view" data-detail-panel="Menu" hidden>
+            <div class="page-grid">
+              <div class="panel"><p class="section-label">Selected menu</p><h3>Items currently assigned to the event</h3><div class="grid-2 menu-grid"><article class="card"><p class="mini-label">Signature</p><strong>Citrus Herb Roasted Chicken</strong><p>Bright, crowd-pleasing roast with seasonal greens and a lemon glaze.</p></article><article class="card"><p class="mini-label">Plant-based</p><strong>Miso-Glazed Aubergine</strong><p>Silky roasted eggplant with sesame crunch and herb rice.</p></article><article class="card"><p class="mini-label">Seasonal</p><strong>Market Vegetable Tart</strong><p>Buttery tart stacked with caramelized vegetables and whipped ricotta.</p></article><article class="card"><p class="mini-label">Dessert</p><strong>Coconut Citrus Panna Cotta</strong><p>Silky finale with macerated berries and toasted coconut.</p></article></div></div>
+              <aside class="panel"><p class="section-label">Menu builder</p><h3>Use the wider canvas for high-level selection</h3><p class="muted">Move into results once the mix feels balanced.</p><div style="display:grid; gap:0.5rem;"><span class="pill success">8 planned portions per guest group</span><span class="pill warning">1 allergen mismatch flagged</span><span class="pill accent">Responsive cards</span></div></aside>
+            </div>
+          </section>
+
+          <section class="detail-view" data-detail-panel="Results" hidden>
+            <div class="page-grid">
+              <div class="panel"><p class="section-label">Calculation results</p><h3>Distribution, totals, and flags</h3><div class="table"><div class="table-head"><span>Dish</span><span>Quantity</span><span>Total</span><span>Flag</span></div><div class="table-row"><strong>Citrus Herb Roasted Chicken</strong><span>104</span><span>$1,456</span><span>meets 44 vegan/vegetarian guests separately</span></div><div class="table-row"><strong>Miso-Glazed Aubergine</strong><span>34</span><span>$374</span><span>requires gluten-free rice swap for 19 guests</span></div><div class="table-row"><strong>Market Vegetable Tart</strong><span>46</span><span>$552</span><span>contains dairy and gluten</span></div></div></div>
+              <aside class="panel"><p class="section-label">Cost matrix</p><div style="display:grid; gap:0.85rem;"><div class="breakdown-row"><span>Vegetarian</span><strong>$1,242</strong></div><div class="breakdown-row"><span>Gluten-free</span><strong>$1,028</strong></div><div class="breakdown-row"><span>Vegan</span><strong>$618</strong></div><div class="breakdown-row"><span>Grand total</span><strong>$4,382</strong></div></div></aside>
+            </div>
+          </section>
+        </section>
+      </main>
+    </div>
+
+    <script>
+      const navButtons = Array.from(document.querySelectorAll('[data-page]'));
+      const pages = Array.from(document.querySelectorAll('[data-page-panel]'));
+      const tabButtons = Array.from(document.querySelectorAll('[data-tab]'));
+      const detailPanels = Array.from(document.querySelectorAll('[data-detail-panel]'));
+
+      function showPage(page) {
+        navButtons.forEach((button) => button.setAttribute('aria-pressed', String(button.dataset.page === page)));
+        pages.forEach((panel) => panel.classList.toggle('active', panel.dataset.pagePanel === page));
+      }
+
+      function showDetail(tab) {
+        tabButtons.forEach((button) => button.setAttribute('aria-pressed', String(button.dataset.tab === tab)));
+        detailPanels.forEach((panel) => panel.hidden = panel.dataset.detailPanel !== tab);
+      }
+
+      navButtons.forEach((button) => button.addEventListener('click', () => showPage(button.dataset.page)));
+      tabButtons.forEach((button) => button.addEventListener('click', () => showDetail(button.dataset.tab)));
+    </script>
+  </body>
+</html>

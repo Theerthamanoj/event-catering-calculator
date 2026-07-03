@@ -1,0 +1,231 @@
+.topBar {
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+.filterGroup {
+  display: flex;
+  gap: 0.65rem;
+  flex-wrap: wrap;
+}
+
+.filterButton,
+.filterButtonActive,
+.primaryButton,
+.secondaryButton,
+.saveButton {
+  border: 0;
+  border-radius: 999px;
+  padding: 0.8rem 1.1rem;
+  font: inherit;
+  font-weight: 800;
+  cursor: pointer;
+  transition: transform 160ms ease, box-shadow 160ms ease, background 160ms ease;
+}
+
+.filterButton {
+  background: rgba(255, 255, 255, 0.76);
+  color: var(--color-ink);
+}
+
+.filterButtonActive {
+  background: linear-gradient(135deg, rgba(217, 119, 6, 0.16), rgba(37, 99, 235, 0.16));
+  color: var(--color-ink);
+  box-shadow: inset 0 0 0 1px rgba(37, 99, 235, 0.2);
+}
+
+.resultCount {
+  margin: 0;
+  color: var(--color-muted);
+}
+
+.layout {
+  display: grid;
+  grid-template-columns: minmax(0, 1.45fr) minmax(300px, 0.95fr);
+  gap: 1rem;
+}
+
+.libraryGrid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 1rem;
+}
+
+.dishCard,
+.ingredientStudio,
+.noteCard {
+  border-radius: 28px;
+  background: rgba(255, 255, 255, 0.8);
+  border: 1px solid rgba(148, 163, 184, 0.16);
+  -webkit-backdrop-filter: blur(12px);
+  box-shadow: var(--shadow-sm);
+  backdrop-filter: blur(12px);
+}
+
+.dishCard {
+  padding: 1.1rem;
+  display: grid;
+  gap: 0.95rem;
+}
+
+.cardHeader {
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+  align-items: start;
+}
+
+.category,
+.panelKicker,
+.subheading {
+  margin: 0 0 0.35rem;
+  text-transform: uppercase;
+  letter-spacing: 0.16em;
+  font-size: 0.72rem;
+  font-weight: 800;
+  color: var(--color-muted);
+}
+
+.cardHeader h2,
+.ingredientStudio h3,
+.noteCard h3 {
+  margin: 0;
+  font-size: 1.2rem;
+  line-height: 1.2;
+  letter-spacing: -0.03em;
+}
+
+.description,
+.noteCard p {
+  margin: 0;
+  color: var(--color-text);
+  line-height: 1.65;
+}
+
+.tagRow {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.splitRow {
+  display: grid;
+  grid-template-columns: 1.1fr 0.9fr;
+  gap: 1rem;
+}
+
+.inlineList {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.45rem;
+  color: var(--color-text);
+}
+
+.inlineList li {
+  padding: 0.35rem 0.55rem;
+  border-radius: 999px;
+  background: rgba(148, 163, 184, 0.12);
+}
+
+.sidePanel {
+  display: grid;
+  gap: 1rem;
+}
+
+.ingredientStudio,
+.noteCard {
+  padding: 1.15rem;
+}
+
+.field,
+.fieldset {
+  display: grid;
+  gap: 0.5rem;
+}
+
+.field span,
+.fieldset legend {
+  font-size: 0.9rem;
+  font-weight: 700;
+  color: var(--color-ink);
+}
+
+.field input {
+  width: 100%;
+  border: 1px solid rgba(148, 163, 184, 0.25);
+  border-radius: 16px;
+  padding: 0.85rem 1rem;
+  font: inherit;
+  background: rgba(255, 255, 255, 0.94);
+  color: var(--color-ink);
+}
+
+.fieldset {
+  border: 0;
+  padding: 0;
+  margin: 0;
+}
+
+.checkGrid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.65rem;
+}
+
+.checkItem {
+  display: flex;
+  gap: 0.55rem;
+  align-items: center;
+  padding: 0.7rem 0.8rem;
+  border-radius: 14px;
+  background: rgba(148, 163, 184, 0.08);
+}
+
+.checkItem input {
+  accent-color: #2563eb;
+}
+
+.saveButton {
+  color: #fff;
+  background: linear-gradient(135deg, #0f766e, #2563eb);
+}
+
+.primaryButton {
+  color: #fff;
+  background: linear-gradient(135deg, #d97706, #2563eb);
+}
+
+.secondaryButton {
+  background: rgba(255, 255, 255, 0.92);
+  color: var(--color-ink);
+}
+
+@media (max-width: 1080px) {
+  .layout,
+  .libraryGrid {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 640px) {
+  .topBar,
+  .splitRow {
+    grid-template-columns: 1fr;
+    flex-direction: column;
+    align-items: start;
+  }
+
+  .cardHeader {
+    flex-direction: column;
+  }
+
+  .checkGrid {
+    grid-template-columns: 1fr;
+  }
+}
